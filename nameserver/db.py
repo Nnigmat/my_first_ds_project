@@ -35,13 +35,13 @@ class Files():
         items = []
         folders = []
         for i in range(len(files)):
-            f = files[i].split('/')
+            f = files[i][len(name):].split('/')
             if files[i].startswith(name):
                 if files[i][-1] == '/':
                     if files[i] != name:
-                        folders.append(f[-2])
+                        folders.append(f[0])
                 else:
-                    items.append(f[-1])
+                    items.append(f[0])
         return (folders, items) 
 
     def get_all(self):
