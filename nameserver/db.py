@@ -10,8 +10,10 @@ class Files():
 
         self.db_name = 'f'
         self.name = name
-        self.db = pickledb.load(name, os.path.isfile("./"+name))
-        self.db.lcreate(self.db_name)
+        self.is_exist = os.path.isfile("./"+name)
+        self.db = pickledb.load(name, self.is_exist)
+        if not self.is_exist:
+            self.db.lcreate(self.db_name)
         self.db.dump()
 
     def is_file_exist(self, name):
@@ -47,12 +49,13 @@ class Files():
         items = []
         folders = []
         for i in range(len(files)):
+            f = files[i].split('/')
             if files[i].startswith(name):
                 if files[i][-1] == '/':
                     if files[i] != name:
-                        folders.append(files[i])
+                        folders.append(f[-2])
                 else:
-                    items.append(files[i])
+                    items.append(f[-1])
         return (folders, items) 
 
     def get_all(self):
