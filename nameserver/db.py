@@ -43,7 +43,8 @@ class Files():
 
     def items_in_folder(self, name):
         '''
-
+        Get all items in folder
+        Name - full path
         '''
         files = self.db.lgetall(self.db_name)
         items = []
@@ -59,5 +60,8 @@ class Files():
         return (folders, items) 
 
     def get_all(self):
+        '''
+        Return all files
+        '''
         return self.db.lgetall(self.db_name)
 
