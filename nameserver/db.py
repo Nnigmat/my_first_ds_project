@@ -15,7 +15,7 @@ class Files():
             self.db.lcreate(self.db_name)
         self.db.dump()
 
-    def is_file_exist(self, name):
+    def exists(self, name):
         '''
         Check presents of a file in db
         Name - full path (e.g. /home/dir/file.txt or /home/dir/)

@@ -3,6 +3,7 @@ from db import Files
 
 app = Flask(__name__)
 db_name = 'db'
+files = Files(db_name)
 
 @app.route('/')
 def index():
@@ -10,7 +11,7 @@ def index():
 
 
 @app.route('/dirs/', defaults={'path': ''}, methods=['POST', 'GET'])
-@app.route('/dirs/<path:path>', methods=['POST', 'GET', 'DELETE'])
+@app.route('/dirs/<path:path>', methods=['POST', 'GET'])
 def dirs(path):
     '''
     GET:
@@ -24,18 +25,24 @@ def dirs(path):
     DELETE:
         Delete directory
     '''
+    path = '/' if path == '' else f'/{path}/'
+
     if request.method == 'GET':
-        path = '/' if path == '' else f'/{path}/'
+        # Get path, link to prev page, dirs and folders
         prev = '/'.join(path.split('/')[:-2])
-        d, f = Files(db_name).items_in_folder(path)
+        d, f = files.items_in_folder(path)
 
         return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev)
-    elif request.method == 'POST':
-        pass
-    elif request.method == 'DELETE':
-        pass
-
-    return path
+    else:
+        d_name = request.form['dir_name']
+        d_path = f'{path}{d_name}/'
+        if request.form['method'] == 'PUT':
+            if not files.exists(d_path):
+                files.add(d_path)
+        else:
+            if files.exists(d_path):
+                files.del_file(d_path)
+    return redirect(f'/dirs{path}')
 
 
 @app.route('/file/<path:path>', methods=['GET', 'POST', 'DELETE'])

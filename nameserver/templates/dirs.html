@@ -1,3 +1,17 @@
+<form method="POST" action="/dirs/">
+    <input type="text" name="dir_name" placeholder="Folder name" />
+    <input type="hidden" name="method" value="PUT" />
+    <input type="submit" value="Create folder" />
+</form>
+<form method="POST" action="/dirs/">
+    <input type="text" name="dir_name" placeholder="Folder name" />
+    <input type="hidden" name="method" value="DELETE" />
+    <input type="submit" value="Delete folder" />
+</form>
+<form method="POST" action="/file">
+    <input type="text" name="file_name" placeholder="File name" />
+    <input type="submit" value="Create file" />
+</form>
 <ul>
     {% if path != '/' %}
     <a href="{{'/dirs' + prev}}"><li> .. </li></a>
@@ -8,6 +22,6 @@
     {% endfor %}
 
     {% for file in files %}
-    <a href="{{'/dirs' + path + file}}"><li> {{file}} </li></a>
+    <a href="{{'/file' + path + file}}"><li> {{file}} </li></a>
     {% endfor %}
 </ul>
