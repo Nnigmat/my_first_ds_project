@@ -1,9 +1,13 @@
 <ul>
+    {% if path != '' %}
+    <a href="{{'/dirs' + path}}"><li> .. </li></a>
+    {% endif %}
+
     {% for dir in dirs %}
-    <a href="{{path + dir}}"><li> {{dir}} </li></a>
+    <a href="{{'/dirs' + path + dir}}"><li> {{dir}} </li></a>
     {% endfor %}
 
     {% for file in files %}
-    <a href="{{path + file}}"><li> {{file}} </li></a>
+    <a href="{{'/dirs' + path + file}}"><li> {{file}} </li></a>
     {% endfor %}
 </ul>
