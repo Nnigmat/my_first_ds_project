@@ -7,7 +7,7 @@ class Files():
         name - filename of db
         db_name - name of subdb
         '''
-        self.db_name = 'f'
+        self.db_name = 'db'
         self.name = name
         self.is_exist = os.path.isfile("./"+name)
         self.db = pickledb.load(name, self.is_exist, False)
@@ -19,7 +19,7 @@ class Files():
         '''
         Check presents of a file in db
         Name - full path (e.g. /home/dir/file.txt or /home/dir/)
-        '''
+        ''' 
         res = self.db.lgetall(self.db_name)
         return name in res
 
@@ -69,7 +69,7 @@ class Files():
 
 
 if __name__ == '__main__':
-    f = Files('f')
+    f = Files('db')
     f.add('/home/')
     f.add('/home/file1.txt')
     f.add('/a.txt')

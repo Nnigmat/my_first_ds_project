@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from db import Files
 
 app = Flask(__name__)
+db_name = 'db'
 
 @app.route('/')
 def index():
@@ -23,11 +24,14 @@ def dirs(path):
     DELETE:
         Delete directory
     '''
-    if not path.endswith('/'):
-        path = path + '/'
+    if path == '':
+        path = '/'
+    else:
+        path = f'/{path}/'
     
-    files = Files('f')
+    files = Files(db_name)
     d, f = files.items_in_folder(path)
+    print(path, d, f)
 
     if request.method == 'GET':
         return render_template('dirs.html', dirs=d, files=f, path=path)
@@ -94,7 +98,9 @@ def init():
     Send command to delete files to storage nodes
     Return index page
     '''
-    return render_template('index.html')
+    files = Files(db_name)
+
+    return redirect(url_for('dirs'))
 
 
 
