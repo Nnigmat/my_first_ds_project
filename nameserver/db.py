@@ -47,8 +47,8 @@ class Files():
         Name - full path to folder (means ends with '/')
         '''
         paths = self.db.lgetall(self.db_name)
-        files = []
-        folders = []
+        files = set()
+        folders = set() 
         for path in paths:
             if not path.startswith(name):
                 continue
@@ -56,9 +56,9 @@ class Files():
             # Get filename in folder
             tmp = f[len(name):].split('/')[0]
             if f.endswith('/') and f != name:
-                folders.append(tmp)
+                folders.add(tmp)
             else:
-                files.append(tmp)
+                files.add(tmp)
 
         return (folders, files) 
 
