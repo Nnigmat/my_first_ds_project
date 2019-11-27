@@ -7,11 +7,10 @@ class Files():
         name - filename of db
         db_name - name of subdb
         '''
-
         self.db_name = 'f'
         self.name = name
         self.is_exist = os.path.isfile("./"+name)
-        self.db = pickledb.load(name, self.is_exist)
+        self.db = pickledb.load(name, self.is_exist, False)
         if not self.is_exist:
             self.db.lcreate(self.db_name)
         self.db.dump()
@@ -54,8 +53,8 @@ class Files():
                 continue
 
             # Get filename in folder
-            tmp = f[len(name):].split('/')[0]
-            if f.endswith('/') and f != name:
+            tmp = path[len(name):].split('/')[0]
+            if path.endswith('/') and path != name:
                 folders.add(tmp)
             else:
                 files.add(tmp)
@@ -68,3 +67,9 @@ class Files():
         '''
         return self.db.lgetall(self.db_name)
 
+
+if __name__ == '__main__':
+    f = Files('f')
+    f.add('/home/')
+    f.add('/home/file1.txt')
+    f.add('/a.txt')

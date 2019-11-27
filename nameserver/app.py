@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from db import Files
 
 app = Flask(__name__)
 
@@ -24,9 +25,9 @@ def dirs(path):
     '''
     if not path.endswith('/'):
         path = path + '/'
-
-    d = ['dir1', 'dir2']
-    f = ['file1', 'file2']
+    
+    files = Files('f')
+    d, f = files.items_in_folder(path)
 
     if request.method == 'GET':
         return render_template('dirs.html', dirs=d, files=f, path=path)
