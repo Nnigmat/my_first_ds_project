@@ -54,12 +54,10 @@ class Files():
 
             # Get filename in folder
             tmp = path[len(name):].split('/')[0]
-            if path.endswith('/') and path != name:
-                if tmp not in files:
-                    folders.add(tmp)
+            if len(tmp) != 1 and path != name:
+                folders.add(tmp)
             else:
-                if tmp not in folders:
-                    files.add(tmp)
+                files.add(tmp)
 
         return (list(set(folders)), list(set(files))) 
 
