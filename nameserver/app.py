@@ -22,9 +22,14 @@ def dirs(path):
     DELETE:
         Delete directory
     '''
+    if not path.endswith('/'):
+        path = path + '/'
+
+    d = ['dir1', 'dir2']
+    f = ['file1', 'file2']
 
     if request.method == 'GET':
-        pass
+        return render_template('dirs.html', dirs=d, files=f, path=path)
     elif request.method == 'POST':
         pass
     elif request.method == 'DELETE':
@@ -64,7 +69,7 @@ def info(path):
     return path
 
 
-@app.route('/copy', method=['POST']):
+@app.route('/copy', methods=['POST'])
 def copy(path):
     '''
     Copy source file to the target directory
@@ -73,7 +78,7 @@ def copy(path):
         source, target = request.form['source'], request.form['target']
 
 
-@app.route('/move', method=['POST'])
+@app.route('/move', methods=['POST'])
 def move():
     '''
     Move source file to the target directory
@@ -92,4 +97,4 @@ def init():
 
 
 
-app.run()
+app.run(debug=True)
