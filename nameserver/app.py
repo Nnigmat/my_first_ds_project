@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from db import Files
 
 app = Flask(__name__)
@@ -99,6 +99,7 @@ def init():
     Return index page
     '''
     files = Files(db_name)
+    files.drop_table()
 
     return redirect(url_for('dirs'))
 

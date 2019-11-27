@@ -53,13 +53,13 @@ class Files():
                 continue
 
             # Get filename in folder
-            tmp = path[len(name):].split('/')[0]
-            if len(tmp) != 1 and path != name:
-                folders.add(tmp)
+            tmps = path[len(name):].split('/')
+            if len(tmps) != 1 and path != name:
+                folders.add(tmps[0])
             else:
-                files.add(tmp)
+                files.add(tmps[0])
 
-        return (list(set(folders)), list(set(files))) 
+        return (set(folders), set(files)) 
 
     def drop_table(self):
         os.remove(self.name)
