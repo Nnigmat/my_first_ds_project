@@ -44,20 +44,23 @@ class Files():
     def items_in_folder(self, name):
         '''
         Get all items in folder
-        Name - full path
+        Name - full path to folder (means ends with '/')
         '''
-        files = self.db.lgetall(self.db_name)
-        items = []
+        paths = self.db.lgetall(self.db_name)
+        files = []
         folders = []
-        for i in range(len(files)):
-            f = files[i][len(name):].split('/')
-            if files[i].startswith(name):
-                if files[i][-1] == '/':
-                    if files[i] != name:
-                        folders.append(f[0])
-                else:
-                    items.append(f[0])
-        return (folders, items) 
+        for path in paths:
+            if not path.startswith(name):
+                continue
+
+            # Get filename in folder
+            tmp = f[len(name):].split('/')[0]
+            if f.endswith('/') and f != name:
+                folders.append(tmp)
+            else:
+                files.append(tmp)
+
+        return (folders, files) 
 
     def get_all(self):
         '''
