@@ -55,11 +55,16 @@ class Files():
             # Get filename in folder
             tmp = path[len(name):].split('/')[0]
             if path.endswith('/') and path != name:
-                folders.add(tmp)
+                if tmp not in files:
+                    folders.add(tmp)
             else:
-                files.add(tmp)
+                if tmp not in folders:
+                    files.add(tmp)
 
-        return (folders, files) 
+        return (list(set(folders)), list(set(files))) 
+
+    def drop_table(self):
+        os.remove(self.name)
 
     def get_all(self):
         '''
