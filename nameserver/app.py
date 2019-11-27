@@ -24,17 +24,12 @@ def dirs(path):
     DELETE:
         Delete directory
     '''
-    if path == '':
-        path = '/'
-    else:
-        path = f'/{path}/'
-    
-    files = Files(db_name)
-    d, f = files.items_in_folder(path)
-    print(path, d, f)
-
     if request.method == 'GET':
-        return render_template('dirs.html', dirs=d, files=f, path=path)
+        path = '/' if path == '' else f'/{path}/'
+        prev = '/'.join(path.split('/')[:-2])
+        d, f = Files(db_name).items_in_folder(path)
+
+        return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev)
     elif request.method == 'POST':
         pass
     elif request.method == 'DELETE':

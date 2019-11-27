@@ -1,6 +1,6 @@
 <ul>
-    {% if path != '' %}
-    <a href="{{'/dirs' + path}}"><li> .. </li></a>
+    {% if path != '/' %}
+    <a href="{{'/dirs' + prev}}"><li> .. </li></a>
     {% endif %}
 
     {% for dir in dirs %}
