@@ -10,10 +10,14 @@ class Files():
         self.db_name = 'db'
         self.name = name
         self.is_exist = os.path.isfile("./"+name)
+        self._init_db(self.name)
+        
+    def _init_db(self, name):
         self.db = pickledb.load(name, self.is_exist, False)
         if not self.is_exist:
             self.db.lcreate(self.db_name)
         self.db.dump()
+
 
     def exists(self, name):
         '''
@@ -62,7 +66,10 @@ class Files():
         return (set(folders), set(files)) 
 
     def drop_table(self):
+        self.db.deldb()
         os.remove(self.name)
+        self.is_exist = False
+        self._init_db(self.name)
 
     def get_all(self):
         '''
