@@ -7,19 +7,23 @@ class Files():
         name - filename of db
         db_name - name of subdb
         '''
-        self.db_name = 'f'
+        self.db_name = 'db'
         self.name = name
         self.is_exist = os.path.isfile("./"+name)
+        self._init_db(self.name)
+        
+    def _init_db(self, name):
         self.db = pickledb.load(name, self.is_exist, False)
         if not self.is_exist:
             self.db.lcreate(self.db_name)
         self.db.dump()
 
-    def is_file_exist(self, name):
+
+    def exists(self, name):
         '''
         Check presents of a file in db
         Name - full path (e.g. /home/dir/file.txt or /home/dir/)
-        '''
+        ''' 
         res = self.db.lgetall(self.db_name)
         res = [item['name'] for item in res]
         return name in res
@@ -69,7 +73,13 @@ class Files():
         return (folders, files)
 
     def drop_table(self):
+        '''
+        Drop table
+        '''
+        self.db.deldb()
         os.remove(self.name)
+        self.is_exist = False
+        self._init_db(self.name)
 
     def get_all(self):
         '''
