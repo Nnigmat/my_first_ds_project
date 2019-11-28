@@ -38,19 +38,21 @@ class Files():
         else:
             self.db.ladd(self.db_name, name)
         self.db.dump()
-    
+
+
     def add_info(self, name, dct):
         files = self.db.lgetall(self.db_name)
-        for i in range(len(files)):
-            if files[i]['name'] == name:
-                for key in list(dct.keys()):
-                    files[i][key] = dct[key]
-    
+        for f in files:
+            if f['name'] == name:
+                f.update(dct)
+        self.db.dump()
+
+
     def get_info(self, name):
         files = self.db.lgetall(self.db_name)
-        for i in range(len(files)):
-            if files[i]['name'] == name:
-                return files[i]
+        for f in files:
+            if f['name'] == name:
+                return f
         return {}
 
     def del_file(self, name):
@@ -69,9 +71,8 @@ class Files():
         Name - full path to folder (means ends with '/')
         '''
         paths = self.db.lgetall(self.db_name)
-        files = []
-        folders = []
-        files_set, folders_set = set(), set() 
+        files = set()
+        folders = set()
         for path in paths:
             if not path['name'].startswith(name):
                 continue
@@ -79,13 +80,11 @@ class Files():
             # Get filename in folder
             tmp = path['name'][len(name):].split('/')[0]
             if len(tmp) != 1 and path['name'] != name:
-                if not tmp in folders_set:
-                    folders_set.add(tmp)
-                    folders.append({'name':tmp, 'size':path['size'],'cr_date':path['cr_date']})
+                if not tmp in folders:
+                    folders.add(tmp)
             else:
-                if not tmp in files_set:
-                    files_set.add(tmp)
-                    files.append({'name':tmp, 'size':path['size'],'cr_date':path['cr_date']})
+                if not tmp in files:
+                    files.add(tmp)
 
         return (folders, files)
 
