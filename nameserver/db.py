@@ -21,6 +21,7 @@ class Files():
         Name - full path (e.g. /home/dir/file.txt or /home/dir/)
         '''
         res = self.db.lgetall(self.db_name)
+        res = [item['name'] for item in res]
         return name in res
 
     def add(self, name):
@@ -37,6 +38,7 @@ class Files():
         Name - full path
         '''
         files = self.db.lgetall(self.db_name)
+        files = [item['name'] for item in files]
         self.db.lpop(self.db_name, files.index(name))
         self.db.dump()
 
@@ -46,20 +48,25 @@ class Files():
         Name - full path to folder (means ends with '/')
         '''
         paths = self.db.lgetall(self.db_name)
-        files = set()
-        folders = set() 
+        files = []
+        folders = []
+        files_set, folders_set = set(), set() 
         for path in paths:
-            if not path.startswith(name):
+            if not path['name'].startswith(name):
                 continue
 
             # Get filename in folder
-            tmp = path[len(name):].split('/')[0]
-            if len(tmp) != 1 and path != name:
-                folders.add(tmp)
+            tmp = path['name'][len(name):].split('/')[0]
+            if len(tmp) != 1 and path['name'] != name:
+                if not tmp in folders_set:
+                    folders_set.add(tmp)
+                    folders.append({'name':tmp, 'size':path['size'],'cr_date':path['cr_date']})
             else:
-                files.add(tmp)
+                if not tmp in files_set:
+                    files_set.add(tmp)
+                    files.append({'name':tmp, 'size':path['size'],'cr_date':path['cr_date']})
 
-        return (list(set(folders)), list(set(files))) 
+        return (folders, files)
 
     def drop_table(self):
         os.remove(self.name)
@@ -73,6 +80,6 @@ class Files():
 
 if __name__ == '__main__':
     f = Files('f')
-    f.add('/home/')
-    f.add('/home/file1.txt')
-    f.add('/a.txt')
+    f.add({'name':'/home/', 'size':1, 'cr_date':1})
+    f.add({'name':'/home/file1.txt', 'size':1, 'cr_date':1})
+    
