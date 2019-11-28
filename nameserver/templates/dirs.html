@@ -8,6 +8,7 @@
     {% endif %}
 {% endwith %}
 
+<!-- Dir controls -->
 <form method="POST" action="/dirs/">
     <input type="text" name="dir_name" placeholder="Folder name" />
     <input type="hidden" name="method" value="PUT" />
@@ -20,11 +21,29 @@
     <input type="hidden" name="path" value="{{path}}" />
     <input type="submit" value="Delete folder" />
 </form>
+
+<!-- File controls -->
 <form method="POST" action="/file/">
     <input type="text" name="file_name" placeholder="File name" />
     <input type="hidden" name="path" value="{{path}}" />
-    <input type="submit" value="Create file" />
+    <input type="hidden" name="method" value="CREATE" />
+    <input type="submit" value="Create empty file" />
 </form>
+<form method="POST" action="/file/">
+    <input type="text" name="file_name" placeholder="File name" />
+    <input type="hidden" name="path" value="{{path}}" />
+    <input type="hidden" name="method" value="DELETE" />
+    <input type="submit" value="Delete file" />
+</form>
+<form method="POST" action="/file/" enctype="multipart/form-data">
+    <label for="file">Choose file to upload</label>
+    <input type="hidden" name="path" value="{{path}}" />
+    <input type="hidden" name="method" value="UPLOAD" />
+    <input type="file" id="file" name="file" multiple>
+    <input type="submit" value="Upload file" />
+</form>
+
+<!-- Dirs and files -->
 <ul>
     {% if path != '/' %}
     <a href="{{'/dirs' + prev}}"><li> .. </li></a>

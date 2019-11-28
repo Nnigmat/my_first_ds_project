@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from db import Files
+import requests as r
 
 app = Flask(__name__)
 db_name = 'db'
@@ -31,26 +32,25 @@ def dirs(path):
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
-
         return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev)
     else:
-        d_name = request.form['dir_name']
         location = request.form['path']
-        print(location)
+        d_name = request.form['dir_name']
         d_path = f'{location}{d_name}/'
-        print(d_path)
     
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
                 files.add(d_path)
-        else:
+                # send created folder to server
+        elif request.form['method'] == 'DELETE':
             if files.exists(d_path):
                 files.del_file(d_path)
+                # send deleted folder to server
         return redirect(f'/dirs{d_path}')
 
 
 @app.route('/file/', methods=['GET', 'POST'], defaults={'path': ''})
-@app.route('/file/<path:path>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/file/<path:path>', methods=['GET', 'POST'])
 def file(path):
     '''
     GET:
@@ -58,32 +58,33 @@ def file(path):
 
     POST:
         Upload file to given path or create new empty one
-
-    DELETE:
-        Delete file at given path
+        Delete file
     '''
     
     if request.method == 'GET':
         # Should return list of availagle ip addresses to user
         return jsonify(ips=['127.0.0.1'], ports=['5000'])
     elif request.method == 'POST':
-        '''
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
+        location = request.form['path']
+        f_name = request.form['file_name']
+        f_path = f'{location}{f_name}/'
 
-        f = request.files['file']
-        if f.filename == '':
-            flash('No selected file')
-            return rederect(requeest.url)
-
-        if f and allowed_file(f.filename):
-            pass
-        '''
-        pass
-    elif request.method == 'DELETE':
-        pass
-
+        if request.form['method'] == 'UPLOAD':
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            f = request.files['file']
+            if f.filename == '':
+                flash('No selected file')
+                return rederect(requeest.url)
+            # Need to implement sending to cluster
+            r.post('url' ,f.read())
+        elif request.form['method'] == 'CREATE':
+            if not files.exists(f_path):
+                files.add(f_path)
+        elif request.form['method'] == 'DELETE':
+            if files.exists(f_path):
+                files.del_file(f_path)
     return path
 
 

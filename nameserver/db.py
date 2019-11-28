@@ -63,9 +63,12 @@ class Files():
             else:
                 files.add(tmps[0])
 
-        return (set(folders), set(files)) 
+        return (sorted(folders), sorted(files)) 
 
     def drop_table(self):
+        '''
+        Drop table
+        '''
         self.db.deldb()
         os.remove(self.name)
         self.is_exist = False
