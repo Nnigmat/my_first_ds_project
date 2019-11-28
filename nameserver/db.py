@@ -33,8 +33,25 @@ class Files():
         Add file to the db.
         Name - full path
         '''
-        self.db.ladd(self.db_name, name)
+        if type(name) == str:
+            self.db.ladd(self.db_name, {'name':name, 'size':-1, 'cr_date':-1})
+        else:
+            self.db.ladd(self.db_name, name)
         self.db.dump()
+    
+    def add_info(self, name, dct):
+        files = self.db.lgetall(self.db_name)
+        for i in range(len(files)):
+            if files[i]['name'] == name:
+                for key in list(dct.keys()):
+                    files[i][key] = dct[key]
+    
+    def get_info(self, name):
+        files = self.db.lgetall(self.db_name)
+        for i in range(len(files)):
+            if files[i]['name'] == name:
+                return files[i]
+        return {}
 
     def del_file(self, name):
         '''
