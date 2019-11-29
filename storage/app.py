@@ -2,9 +2,12 @@ import sys
 import os
 import threading
 import requests
+import time
 from flask import Flask, request, send_file, abort
+from multiprocessing import Pool
 
 app = Flask(__name__)
+NAMESERVER = '127.0.0.1:4000'
 PORT = '8081'
 ROOTDIR = 'file/'
 NODES = ['127.0.0.1']
@@ -12,8 +15,29 @@ FAILED_NODES = []
 app.config['UPLOAD_FOLDER'] = ROOTDIR
 
 
+def init():
+    """
+    Ask nameserver for storage nodes until it answer
+    """
+    url = createURL(NAMESERVER, path="/get/storages")
+    try:
+        r = requests.get(url=url)
+    except requests.exceptions.ConnectionError:
+        time.sleep(10)
+        init()
+    else:
+        pass
+        # Somehow save
+
+
 @app.route('/file/<path:path>', methods=['GET', 'POST'])
 def upload_file(path):
+    """
+    GET:
+        Return file by path if exist else 418
+    POST:
+        Return 201 if file successful saved  else 400
+    """
     filepath = os.path.join(ROOTDIR, path)
     if request.method == 'GET':
         if os.path.exists(filepath) and os.path.isfile(filepath):
@@ -31,26 +55,42 @@ def upload_file(path):
 
 @app.route('/ask/new', methods=['GET'])
 def sync_files():
+    """
+    GET:
+        Send all files to client
+    """
     storageAddr = request.remote_addr
     files = getAllFilePaths()
-    for file in files:
-        sync_file(file, storageAddr)
+    # for file in files:
+    #     sync_file(file, storageAddr)
+    # print(files)
+    with Pool(processes=8) as pool:
+        pool.starmap(sync_file, map(lambda x: (x, storageAddr), files))
     return 'Done', 200
 
 
 def sync_file(filepath, addr):
+    """
+    Send file to addr
+    """
     url = createURL(addr, PORT, filepath)
     file = {'file': open(filepath, 'rb')}
-    requests.post(url, files=file)
+    try:
+        requests.post(url, files=file)
+    except requests.exceptions.ConnectionError:
+        print(addr, "is failed")
 
 
-def heartbeat_ask():
-    timer = threading.Timer(15.0, heartbeat_ask)
+def heartbeat_ask(repeatTime=15.0):
+    """
+    Every repeatTime seconds check that node is reachable
+    """
+    timer = threading.Timer(repeatTime, heartbeat_ask)
     timer.start()
     for node in NODES:
         url = createURL(node, PORT)
         try:
-            r = requests.get(url=url)
+            requests.get(url=url)
         except requests.exceptions.ConnectionError:
             if node in FAILED_NODES:
                 NODES.remove(node)
@@ -65,8 +105,8 @@ def heartbeat_ask():
     return timer
 
 
-def createURL(addr, port, filepath=''):
-    return "http://{}:{}/{}".format(addr, port, filepath)
+def createURL(addr='', port='', path=''):
+    return "http://{}:{}/{}".format(addr, port, path)
 
 
 def getAllFilePaths():
@@ -86,6 +126,7 @@ if __name__ == '__main__':
     if not os.path.exists(ROOTDIR):
         os.makedirs(ROOTDIR)
 
+    init()
     heartbeat = heartbeat_ask()
     app.run(port=port)
     heartbeat.cancel()
