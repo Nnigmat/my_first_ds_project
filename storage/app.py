@@ -24,10 +24,19 @@ def init():
         r = requests.get(url=url)
     except requests.exceptions.ConnectionError:
         time.sleep(10)
-        init()
+        return init()
     else:
         pass
         # Somehow save
+
+    for node in NODES:
+        url = createURL(node, PORT, "/ask/new")
+        try:
+            r = requests.get(url=url)
+        except requests.exceptions.ConnectionError:
+            continue
+        else:
+            break
 
 
 @app.route('/file/<path:path>', methods=['GET', 'POST'])
@@ -51,6 +60,18 @@ def upload_file(path):
         for node in NODES:
             sync_file(filepath, node)
         return filepath, 201
+
+
+@app.route('/dir/<path:path>', methods=['GET'])
+def create_folder(path):
+    """
+    GET:
+        Create folder
+    """
+    filepath = os.path.join(ROOTDIR, path)
+    if not os.path.exists(filepath):
+        os.mkdir(filepath)
+    return filepath, 201
 
 
 @app.route('/ask/new', methods=['GET'])
