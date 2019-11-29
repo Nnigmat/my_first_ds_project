@@ -70,7 +70,7 @@ def create_folder(path):
     """
     filepath = os.path.join(ROOTDIR, path)
     if not os.path.exists(filepath):
-        os.mkdir(filepath)
+        os.makedirs(filepath)
     return filepath, 201
 
 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     if not os.path.exists(ROOTDIR):
         os.makedirs(ROOTDIR)
 
-    init()
+    #init()
     heartbeat = heartbeat_ask()
     app.run(port=port)
     heartbeat.cancel()
