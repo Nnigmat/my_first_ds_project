@@ -3,6 +3,7 @@ import os
 import threading
 import requests
 import time
+import shutil
 from flask import Flask, request, send_file, abort
 from multiprocessing import Pool
 
@@ -74,6 +75,43 @@ def create_folder(path):
     return filepath, 201
 
 
+@app.route('/delete/<path:path>', methods=['GET'])
+def delete(path):
+    """
+    GET:
+        Delete folder or file
+    """
+    filepath = os.path.join(ROOTDIR, path)
+    if os.path.exists(filepath):
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+        else:
+            shutil.rmtree(filepath)
+    for node in NODES:
+        url = createURL(node, PORT, '/delete/' + path)
+        try:
+            requests.get(url)
+        except requests.exceptions.ConnectionError:
+            print(node, "is failed")
+    return "Done", 201
+
+
+@app.route('/move/<path:path>', methods=['GET'])
+def move(path):
+    moveFrom = os.path.join(ROOTDIR, path)
+    moveTo = os.path.join(ROOTDIR, request.values["to"])
+    if os.path.exists(moveFrom):
+        shutil.move(moveFrom, moveTo)
+    for node in NODES:
+        url = createURL(node, PORT, '/move/' + path)
+        params = {'to': request.values["to"]}
+        try:
+            requests.get(url, params=params)
+        except requests.exceptions.ConnectionError:
+            print(node, "is failed")
+    return "Done", 201
+
+
 @app.route('/ask/new', methods=['GET'])
 def sync_files():
     """
@@ -100,6 +138,13 @@ def sync_file(filepath, addr):
         requests.post(url, files=file)
     except requests.exceptions.ConnectionError:
         print(addr, "is failed")
+
+
+def sync_action(addr, action):
+    """
+    Go to some storage url which do action
+    Action is path
+    """
 
 
 def heartbeat_ask(repeatTime=15.0):
@@ -147,7 +192,7 @@ if __name__ == '__main__':
     if not os.path.exists(ROOTDIR):
         os.makedirs(ROOTDIR)
 
-    #init()
+    # init()
     heartbeat = heartbeat_ask()
     app.run(port=port)
     heartbeat.cancel()
