@@ -4,6 +4,7 @@ import threading
 import requests
 import time
 import shutil
+import distutils.dir_util as dir_util
 from flask import Flask, request, send_file, abort
 from multiprocessing import Pool
 
@@ -88,11 +89,7 @@ def delete(path):
         else:
             shutil.rmtree(filepath)
     for node in NODES:
-        url = createURL(node, PORT, '/delete/' + path)
-        try:
-            requests.get(url)
-        except requests.exceptions.ConnectionError:
-            print(node, "is failed")
+        sync_action(node, '/delete/' + path)
     return "Done", 201
 
 
@@ -100,15 +97,28 @@ def delete(path):
 def move(path):
     moveFrom = os.path.join(ROOTDIR, path)
     moveTo = os.path.join(ROOTDIR, request.values["to"])
-    if os.path.exists(moveFrom):
-        shutil.move(moveFrom, moveTo)
+    if not os.path.exists(moveFrom):
+        abort(400)
+    shutil.move(moveFrom, moveTo)
     for node in NODES:
-        url = createURL(node, PORT, '/move/' + path)
-        params = {'to': request.values["to"]}
-        try:
-            requests.get(url, params=params)
-        except requests.exceptions.ConnectionError:
-            print(node, "is failed")
+        sync_action(node, '/move/' + path, {'to': request.values["to"]})
+    return "Done", 201
+
+
+@app.route('/copy/<path:path>', methods=['GET'])
+def copy(path):
+    copyFrom = os.path.join(ROOTDIR, path)
+    copyTo = os.path.join(ROOTDIR, request.values["to"])
+    print(copyTo)
+    if not os.path.exists(copyFrom):
+        abort(400)
+    if os.path.isfile(copyFrom):
+        shutil.copy(copyFrom, copyTo)
+    else:
+        dir_util.copy_tree(copyFrom, copyTo)
+
+    for node in NODES:
+        sync_action(node, '/copy/' + path, {'to': request.values["to"]})
     return "Done", 201
 
 
@@ -140,11 +150,16 @@ def sync_file(filepath, addr):
         print(addr, "is failed")
 
 
-def sync_action(addr, action):
+def sync_action(addr, action, params={}):
     """
     Go to some storage url which do action
     Action is path
     """
+    url = createURL(addr, PORT, action)
+    try:
+        requests.get(url, params=params)
+    except requests.exceptions.ConnectionError:
+        print(addr, "is failed")
 
 
 def heartbeat_ask(repeatTime=15.0):
