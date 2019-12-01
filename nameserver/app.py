@@ -10,6 +10,7 @@ app.secret_key = 'hello'
 node_man = NodeManager()
 timer = node_man.heartbeat_ask()
 
+
 @app.route('/')
 def index():
     return redirect(url_for('dirs'))
@@ -30,7 +31,7 @@ def dirs(path):
     '''
     path = '/' if path == '' else f'/{path}'
     prev = '/'.join(path.split('/')[:-2])
-    prev = '/' if prev == '' else prev+'/'
+    prev = '/' if prev == '' else prev + '/'
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
@@ -41,7 +42,7 @@ def dirs(path):
         d_name = request.form['dir_name']
         d_path = f'{location}{"" if location != "/" else ""}{d_name}/'
         print(location, d_name, d_path)
-    
+
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
                 files.add(d_path)
@@ -68,7 +69,7 @@ def file(path):
         Upload file to given path or create new empty one
         Delete file
     '''
-    
+
     if request.method == 'GET':
         return node_man.get_storages()
     elif request.method == 'POST':
@@ -136,11 +137,12 @@ def init():
 
     return redirect(url_for('dirs'))
 
+
 @app.route('/get/storages', methods=['GET'])
 def storages():
     storages = node_man.get_storages()
     node_man.add_node(request.remote_addr)
-    return ','.join(storages)
+    return storages
 
 
 app.run(debug=True)
