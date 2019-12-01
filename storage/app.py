@@ -23,7 +23,6 @@ def init():
     """
     global NODES
     url = NAMESERVER + "/get/storages"
-    print(url)
     try:
         r = requests.get(url=url)
     except requests.exceptions.ConnectionError:
