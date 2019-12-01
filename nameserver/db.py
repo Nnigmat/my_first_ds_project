@@ -62,7 +62,16 @@ class Files():
         '''
         files = self.db.lgetall(self.db_name)
         files = [item['name'] for item in files]
-        self.db.lpop(self.db_name, files.index(name))
+        to_delete = []
+        if name.endswith('/'):
+            for item in files:
+                if item.startswith(name):
+                    to_delete.append(item)
+            for del_it in to_delete:
+                self.db.lpop(self.db_name, files.index(del_it))
+                files.pop(files.index(del_it))
+        else:
+            self.db.lpop(self.db_name, files.index(name))
         self.db.dump()
 
     def items_in_folder(self, name):
