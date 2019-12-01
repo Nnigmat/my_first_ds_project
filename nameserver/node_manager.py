@@ -32,7 +32,7 @@ class NodeManager():
                 if node in self.failed_nodes:
                     self.failed_nodes.remove(node)
                     print(node, "removed")
-                else:
+                elif node in self.nodes:
                     self.nodes.remove(node)
                     self.failed_nodes.append(node)
                     print(node, "failed")
@@ -51,7 +51,7 @@ class NodeManager():
                 if node in self.failed_nodes:
                     self.failed_nodes.remove(node)
                     print(node, "removed")
-                else:
+                elif node in self.nodes:
                     self.nodes.remove(node)
                     self.failed_nodes.append(node)
                     print(node, "failed")
@@ -59,7 +59,7 @@ class NodeManager():
                 if node in self.failed_nodes:
                     self.failed_nodes.remove(node)
                     self.nodes.append(node)
-        return self.nodes
+        return ','.join(self.nodes)
 
     def add_node(self, node):
         self.nodes.append(node)

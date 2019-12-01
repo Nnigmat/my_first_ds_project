@@ -9,7 +9,7 @@ from flask import Flask, request, send_file, abort
 from multiprocessing import Pool
 
 app = Flask(__name__)
-NAMESERVER = 'http://127.0.0.1:5000'
+NAMESERVER = 'http://3.134.97.176:5000'
 PORT = '8080'
 ROOTDIR = 'file/'
 NODES = []
@@ -201,7 +201,7 @@ def heartbeat_ask(repeatTime=15.0):
             if node in FAILED_NODES:
                 FAILED_NODES.remove(node)
                 print(node, "removed")
-            else:
+            elif node in NODES:
                 NODES.remove(node)
                 FAILED_NODES.append(node)
                 print(node, "failed")
