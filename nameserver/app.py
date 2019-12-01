@@ -25,9 +25,9 @@ def dirs(path):
         Create new directory in the given path
         Delete directory
     '''
-    path = '/' if path == '' else f'/{path}/'
+    path = '/' if path == '' else f'/{path}'
     prev = '/'.join(path.split('/')[:-2])
-    prev = '/' if prev == '' else prev
+    prev = '/' if prev == '' else prev+'/'
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
@@ -36,7 +36,7 @@ def dirs(path):
     else:
         location = request.form['path']
         d_name = request.form['dir_name']
-        d_path = f'{location}{"/" if location != "/" else ""}{d_name}/'
+        d_path = f'{location}{"" if location != "/" else ""}{d_name}/'
         print(location, d_name, d_path)
     
         if request.form['method'] == 'PUT':
@@ -81,7 +81,7 @@ def file(path):
             f = request.files['file']
             if f.filename == '':
                 flash('No selected file')
-                return rederect(request.url)
+                return redirect(request.url)
 
             print(f, dir(f))
             # Need to implement sending to cluster
