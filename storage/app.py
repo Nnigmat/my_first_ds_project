@@ -129,7 +129,7 @@ def copy(path):
 
 
 @app.route('/ask/new', methods=['GET'])
-def sync_files():
+def add_node():
     """
     GET:
         Send all files to client
@@ -226,5 +226,5 @@ if __name__ == '__main__':
 
     # init()
     heartbeat = heartbeat_ask()
-    app.run(port=PORT)
+    app.run(host='0.0.0.0', port=PORT)
     heartbeat.cancel()
