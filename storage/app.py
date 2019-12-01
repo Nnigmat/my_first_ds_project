@@ -10,9 +10,9 @@ from multiprocessing import Pool
 
 app = Flask(__name__)
 NAMESERVER = '127.0.0.1:4000'
-PORT = '8081'
+PORT = '8080'
 ROOTDIR = 'file/'
-NODES = ['127.0.0.1']
+NODES = []
 FAILED_NODES = []
 app.config['UPLOAD_FOLDER'] = ROOTDIR
 
@@ -28,8 +28,16 @@ def init():
         time.sleep(10)
         return init()
     else:
-        pass
-        # Somehow save
+        NODES = r.values["to"]
+
+    for node in NODES:
+        url = createURL(node, PORT, "/ask/files")
+        try:
+            r = requests.get(url=url)
+        except requests.exceptions.ConnectionError:
+            continue
+        else:
+            break
 
     for node in NODES:
         url = createURL(node, PORT, "/ask/new")
@@ -37,8 +45,6 @@ def init():
             r = requests.get(url=url)
         except requests.exceptions.ConnectionError:
             continue
-        else:
-            break
 
 
 @app.route('/file/<path:path>', methods=['GET', 'POST'])
@@ -123,6 +129,18 @@ def copy(path):
 
 
 @app.route('/ask/new', methods=['GET'])
+def add_node():
+    """
+    GET:
+        Send all files to client
+    """
+    storageAddr = request.remote_addr
+    if storageAddr not in NODES:
+        NODES.append(storageAddr)
+    return 'Done', 200
+
+
+@app.route('/ask/files', methods=['GET'])
 def sync_files():
     """
     GET:
@@ -168,21 +186,22 @@ def heartbeat_ask(repeatTime=15.0):
     """
     timer = threading.Timer(repeatTime, heartbeat_ask)
     timer.start()
-    for node in NODES:
+    for node in NODES + FAILED_NODES:
         url = createURL(node, PORT)
         try:
             requests.get(url=url)
         except requests.exceptions.ConnectionError:
             if node in FAILED_NODES:
-                NODES.remove(node)
                 FAILED_NODES.remove(node)
                 print(node, "removed")
             else:
+                NODES.remove(node)
                 FAILED_NODES.append(node)
                 print(node, "failed")
         else:
             if node in FAILED_NODES:
                 FAILED_NODES.remove(node)
+                NODES.append(node)
     return timer
 
 
@@ -200,14 +219,12 @@ def getAllFilePaths():
 
 if __name__ == '__main__':
     if sys.argv[1:]:
-        port = int(sys.argv[1])
-    else:
-        port = 8080
+        NAMESERVER = sys.argv[1]
 
     if not os.path.exists(ROOTDIR):
         os.makedirs(ROOTDIR)
 
     # init()
     heartbeat = heartbeat_ask()
-    app.run(port=port)
+    app.run(host='0.0.0.0', port=PORT)
     heartbeat.cancel()
