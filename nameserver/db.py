@@ -79,14 +79,14 @@ class Files():
 
             # Get filename in folder
             tmp = path['name'][len(name):].split('/')[0]
-            if len(tmp) != 1 and path['name'] != name:
+            if path['name'] != name and path['name'].endswith('/'):
                 if not tmp in folders:
                     folders.add(tmp)
             else:
                 if not tmp in files:
                     files.add(tmp)
 
-        return (folders, files)
+        return (sorted(folders), sorted(files))
 
     def drop_table(self):
         '''

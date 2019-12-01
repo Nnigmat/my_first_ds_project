@@ -9,7 +9,7 @@ app.secret_key = 'hello'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('dirs'))
 
 
 @app.route('/dirs/', defaults={'path': ''}, methods=['POST', 'GET'])
@@ -26,27 +26,32 @@ def dirs(path):
         Delete directory
     '''
     path = '/' if path == '' else f'/{path}/'
-
     prev = '/'.join(path.split('/')[:-2])
     prev = '/' if prev == '' else prev
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
+        print(d, f, path)
         return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev)
     else:
         location = request.form['path']
         d_name = request.form['dir_name']
-        d_path = f'{location}{d_name}/'
+        d_path = f'{location}{"/" if location != "/" else ""}{d_name}/'
+        print(location, d_name, d_path)
     
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
                 files.add(d_path)
                 # send created folder to server
+            else:
+                flash('Directory already exists')
         elif request.form['method'] == 'DELETE':
             if files.exists(d_path):
                 files.del_file(d_path)
                 # send deleted folder to server
-        return redirect(f'/dirs{d_path}')
+            else:
+                flash("Directory doesn't exists")
+        return redirect(f'/dirs{location}')
 
 
 @app.route('/file/', methods=['GET', 'POST'], defaults={'path': ''})
@@ -77,6 +82,8 @@ def file(path):
             if f.filename == '':
                 flash('No selected file')
                 return rederect(requeest.url)
+
+            print(f, dir(f))
             # Need to implement sending to cluster
             r.post('url' ,f.read())
         elif request.form['method'] == 'CREATE':
@@ -124,7 +131,6 @@ def init():
     flash('Initialized correctly')
 
     return redirect(url_for('dirs'))
-
 
 
 app.run(debug=True)
