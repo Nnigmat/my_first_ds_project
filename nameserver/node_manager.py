@@ -59,7 +59,7 @@ class NodeManager():
                 if node in self.failed_nodes:
                     self.failed_nodes.remove(node)
                     self.nodes.append(node)
-        return ','.join(self.nodes)
+        return self.nodes
 
     def add_node(self, node):
         self.nodes.append(node)
