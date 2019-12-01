@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from db import Files
+from node_manager import NodeManager
 import requests as r
 
 app = Flask(__name__)
 db_name = 'db'
 files = Files(db_name)
 app.secret_key = 'hello'
+node_man = NodeManager()
+timer = node_man.heartbeat_ask()
 
 @app.route('/')
 def index():
@@ -132,5 +135,10 @@ def init():
 
     return redirect(url_for('dirs'))
 
+@app.route('/storages', methods=['GET'])
+def storages():
+    return node_man.get_storages()
+
 
 app.run(debug=True)
+timer.cancel()
