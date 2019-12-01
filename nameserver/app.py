@@ -72,7 +72,7 @@ def file(path):
     elif request.method == 'POST':
         location = request.form['path']
         f_name = request.form['file_name']
-        f_path = f'{location}{f_name}/'
+        f_path = f'{location}{f_name}'
 
         if request.form['method'] == 'UPLOAD':
             if 'file' not in request.files:
@@ -81,7 +81,7 @@ def file(path):
             f = request.files['file']
             if f.filename == '':
                 flash('No selected file')
-                return rederect(requeest.url)
+                return rederect(request.url)
 
             print(f, dir(f))
             # Need to implement sending to cluster
@@ -92,7 +92,7 @@ def file(path):
         elif request.form['method'] == 'DELETE':
             if files.exists(f_path):
                 files.del_file(f_path)
-    return path
+    return redirect(url_for('dirs'))
 
 
 @app.route('/info/<path:path>')
@@ -121,7 +121,7 @@ def move():
         source, target = request.form['source'], request.form['target']
 
 
-@app.route('/init', methods=['POST'])
+@app.route('/init', methods=['GET'])
 def init():
     '''
     Send command to delete files to storage nodes
