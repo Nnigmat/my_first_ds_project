@@ -70,14 +70,14 @@ def file(path):
     '''
     
     if request.method == 'GET':
-        # Should return list of availagle ip addresses to user
-        return jsonify(ips=['127.0.0.1'], ports=['5000'])
+        return node_man.get_storages()
     elif request.method == 'POST':
         location = request.form['path']
         f_name = request.form['file_name']
         f_path = f'{location}{f_name}'
 
         if request.form['method'] == 'UPLOAD':
+            '''
             if 'file' not in request.files:
                 flash('No file part')
                 return redirect(request.url)
@@ -86,9 +86,10 @@ def file(path):
                 flash('No selected file')
                 return redirect(request.url)
 
-            print(f, dir(f))
             # Need to implement sending to cluster
             r.post('url' ,f.read())
+            '''
+            return node_man.get_storages()
         elif request.form['method'] == 'CREATE':
             if not files.exists(f_path):
                 files.add(f_path)
@@ -135,9 +136,11 @@ def init():
 
     return redirect(url_for('dirs'))
 
-@app.route('/storages', methods=['GET'])
+@app.route('/get/storages', methods=['GET'])
 def storages():
-    return node_man.get_storages()
+    storages = node_man.get_storages()
+    node_man.add_node(request.remote_addr)
+    return ','.join(storages)
 
 
 app.run(debug=True)
