@@ -222,7 +222,7 @@ def sync_file(filepath, addr):
     url = createURL(addr, PORT, 'sync/' + filepath)
     file = {'file': open(filepath, 'rb')}
     try:
-        requests.post(url, files=file, timeout='0.5')
+        requests.post(url, files=file, timeout=0.5)
     except requests.exceptions.RequestException:
         print(addr, "is failed")
 
@@ -235,7 +235,7 @@ def sync_action(addr, action, params={}):
     url = createURL(addr, PORT, action)
     params['sync'] = True
     try:
-        requests.get(url, params=params, timeout='0.5')
+        requests.get(url, params=params, timeout=0.5)
     except requests.exceptions.RequestException:
         print(addr, "is failed")
     return True
@@ -250,7 +250,7 @@ def heartbeat_ask(repeatTime=15.0):
     for node in NODES + FAILED_NODES:
         url = createURL(node, PORT)
         try:
-            requests.get(url=url, timeout='0.1')
+            requests.get(url=url, timeout=0.1)
         except requests.exceptions.RequestException:
             if node in FAILED_NODES:
                 FAILED_NODES.remove(node)
