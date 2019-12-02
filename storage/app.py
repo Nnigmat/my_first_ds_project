@@ -35,6 +35,7 @@ def init():
         if len(addrsText) != 0:
             NODES = addrsText.split(',')
 
+    print(NODES)
     nodes = NODES.copy()
     for node in nodes:
         url = createURL(node, PORT, "ask/files")
@@ -114,14 +115,23 @@ def delete(path):
         Delete folder or file
     """
     filepath = os.path.join(ROOTDIR, path)
+    if path == '*':
+        filepath = ROOTDIR
     if os.path.exists(filepath):
         if os.path.isfile(filepath):
             os.remove(filepath)
         else:
             shutil.rmtree(filepath)
 
+    if not os.path.exists(ROOTDIR):
+        os.makedirs(ROOTDIR)
+
+    if request.args.get('sync'):
+        return "Done", 201
+
     for node in NODES.copy():
         sync_action(node, 'delete/' + path)
+
     return "Done", 201
 
 
@@ -129,9 +139,17 @@ def delete(path):
 def move(path):
     moveFrom = os.path.join(ROOTDIR, path)
     moveTo = os.path.join(ROOTDIR, request.values["to"])
+    if moveTo == '/':
+        moveTo = ROOTDIR
     if not os.path.exists(moveFrom):
         abort(400)
     shutil.move(moveFrom, moveTo)
+
+    if request.args.get('sync'):
+        return "Done", 201
+
+    for node in NODES.copy():
+        sync_action(node, 'move/' + path, {'to': request.values["to"]})
 
     return "Done", 201
 
@@ -140,12 +158,18 @@ def move(path):
 def copy(path):
     copyFrom = os.path.join(ROOTDIR, path)
     copyTo = os.path.join(ROOTDIR, request.values["to"])
+    if copyTo == '/':
+        copyTo = ROOTDIR
     if not os.path.exists(copyFrom):
         abort(400)
     if os.path.isfile(copyFrom):
         shutil.copy(copyFrom, copyTo)
     else:
         dir_util.copy_tree(copyFrom, copyTo)
+
+    if request.args.get('sync'):
+        return "Done", 201
+
     for node in NODES.copy():
         sync_action(node, 'copy/' + path, {'to': request.values["to"]})
     return "Done", 201
@@ -181,7 +205,7 @@ def sync_file(filepath, addr):
     """
     Send file to addr
     """
-    url = createURL(addr, PORT, '/sync' + filepath)
+    url = createURL(addr, PORT, '/sync/' + filepath)
     file = {'file': open(filepath, 'rb')}
     try:
         requests.post(url, files=file)
@@ -195,6 +219,7 @@ def sync_action(addr, action, params={}):
     Action is path
     """
     url = createURL(addr, PORT, action)
+    params['sync'] = True
     try:
         requests.get(url, params=params)
     except requests.exceptions.ConnectionError:

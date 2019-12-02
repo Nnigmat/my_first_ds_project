@@ -86,11 +86,12 @@ def file(path):
         elif request.form['method'] == 'CREATE':
             if not files.exists(f_path):
                 files.add(f_path)
-                if request.form['not_create'] == 'true':
+                if request.form['not_create'] == 'false':
                     node_man.create_empty_file(f_path)
         elif request.form['method'] == 'DELETE':
             if files.exists(f_path):
                 files.del_file(f_path)
+                node_man.del_dir(f_path)
             else:
                 flash('File does not exist')
         else:
@@ -112,12 +113,14 @@ def copy():
             target = target + '/'
 
         files.copy_file(source, target, path)
+        node_man.copy_dir(path + source, target)
+
         if path == '/':
             return redirect('/dirs/')
         else:
             return redirect('/dirs' + path)
 
-        node_man.copy_dir(source, target)
+
 
 
     return redirect(url_for('dirs'))
@@ -137,7 +140,7 @@ def move():
 
         # Move file in both nameserver and nodes
         files.move_file(source, target, path)
-        node_man.move_dir(source, target)
+        node_man.move_dir(path + source, target)
 
         # Redirect
         if path == '/':
@@ -157,14 +160,14 @@ def init():
     flash('Initialized correctly')
 
     # send init command to storage servers
-    node_man.del_dir('')
+    node_man.del_dir('/*')
 
     return redirect(url_for('dirs'))
 
 
 @app.route('/get/storages', methods=['GET'])
 def storages():
-    storages = node_man.get_storages()
+    storages = node_man.get_storages().copy()
     node_man.add_node(request.remote_addr)
     return ','.join(storages)
 
