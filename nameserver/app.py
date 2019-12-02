@@ -36,6 +36,7 @@ def dirs(path):
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
+        print("dirs", d, 'folders', f)
         if '' in f:
             f.pop(f.index(''))
         infos = files.get_infos([f'{path}/el' for el in f])
