@@ -36,7 +36,7 @@ def init():
 
     nodes = NODES.copy()
     for node in nodes:
-        url = createURL(node, PORT, "/ask/files")
+        url = createURL(node, PORT, "ask/files")
         try:
             r = requests.get(url=url)
         except requests.exceptions.ConnectionError:
