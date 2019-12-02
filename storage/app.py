@@ -9,8 +9,9 @@ from flask import Flask, request, send_file, abort
 from multiprocessing import Pool
 
 app = Flask(__name__)
-NAMESERVER = 'http://3.134.97.176:5000'
-PORT = '8080'
+# NAMESERVER = 'http://3.134.97.176:5000'
+NAMESERVER = 'http://0.0.0.0'
+PORT = 5000
 ROOTDIR = 'file/'
 NODES = []
 FAILED_NODES = []
