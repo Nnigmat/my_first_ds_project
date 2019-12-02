@@ -40,8 +40,8 @@ def init():
     for node in nodes:
         url = createURL(node, PORT, "ask/files")
         try:
-            r = requests.get(url=url)
-        except requests.exceptions.ConnectionError:
+            r = requests.get(url=url, timeout=0.1)
+        except requests.exceptions.ConnectionError or requests.exceptions.ConnectTimeout:
             continue
         else:
             break
@@ -49,8 +49,8 @@ def init():
     for node in nodes:
         url = createURL(node, PORT, "ask/new")
         try:
-            r = requests.get(url=url)
-        except requests.exceptions.ConnectionError:
+            r = requests.get(url=url, timeout=0.1)
+        except requests.exceptions.ConnectionError or requests.exceptions.ConnectTimeout:
             continue
 
 
@@ -206,6 +206,7 @@ def sync_files():
     """
     storageAddr = request.remote_addr
     files = getAllFilePaths()
+    time.sleep(0.5)
     for file in files:
         sync_file(file, storageAddr)
     # with Pool(processes=8) as pool:
