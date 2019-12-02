@@ -47,6 +47,7 @@
                     <i class="fa fa-folder"></i> {{dir}}
                 </a>
 
+                <!-- Delete dir -->
                 <form method="POST" action="/dirs/" class="col-2">
                     <input type="hidden" name="dir_name" value="{{dir}}" />
                     <input type="hidden" name="method" value="DELETE" />
@@ -59,18 +60,36 @@
             {% endfor %}
 
             <!-- Show all files and their buttons -->
-            {% for file in files %}
+            {% for file, info in zip(files, infos) %}
             <div class="row">
                 <a href="{{'/file' + path + file + '/'}}" class="list-group-item list-group-item-action  col-8">
-                    <i class="fa fa-file"></i> {{file}}
+                    <i class="far fa-file"></i> {{file}}
                 </a>
 
-                <form method="POST" action="/file/" class="col-2">
-                    <input type="hidden" name="file_name" value="{{file}}" />
-                    <input type="hidden" name="path" value="{{path}}" />
-                    <input type="hidden" name="method" value="DELETE" />
-                    <button class="btn"><i class="fa fa-trash-alt"></i></button>
-                </form>
+                <div class="col-4">
+                    <!-- Move file -->
+                    <button type="button" class="btn mr-1 float-left" data-toggle="modal" data-target="#moveFileModal" data-source="{{file}}"> 
+                        <i class="fa fa-truck-moving"></i>
+                    </button>
+
+                    <!-- Copy file -->
+                    <button type="button" class="btn mr-1 float-left" data-toggle="modal" data-target="#copyFileModal" data-source="{{file}}"> 
+                        <i class="fa fa-copy"></i>
+                    </button>
+                    
+                    <!-- Delete file -->
+                    <form method="POST" action="/file/">
+                        <input type="hidden" name="file_name" value="{{file}}" />
+                        <input type="hidden" name="path" value="{{path}}" />
+                        <input type="hidden" name="method" value="DELETE" />
+                        <button class="btn mr-1 float-left"><i class="fa fa-trash-alt"></i></button>
+                    </form>
+
+                    <!-- Info file -->
+                    <button type="button" class="btn mr-1 float-left" data-toggle="modal" data-target="#infoFileModal" data-creation_date="">
+                        <i class="fa fa-info"></i>
+                    </button>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -178,16 +197,108 @@
         </div>
     </div>
 
+    <!-- Move file modal -->
+    <div class="modal fade" id="moveFileModal" tabindex="-1" role="dialog" aria-labelledby="moveFileLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="moveFileModal">Move File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form -->
+                    <form method="POST" action="/move/" enctype="multipart/form-data" id="upload">
+                        <div class="form-group">
+                            <label for="source" class="col-form-label">File's name:</label>
+                            <input type="text" id="source" name="source" class="form-control" disabled/>
+                        </div>
+                        <div class="form-group">
+                            <label for="target" class="col-form-label">Target path:</label>
+                            <input type="text" id="target" name="target" class="form-control" />
+                        </div>
+                        <input type="hidden" name="path" id="send_to" value="{{path}}" />
+                    </form>
+                    <!-- End -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" value="save" id="sent-button">Move</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy file modal -->
+    <div class="modal fade" id="copyFileModal" tabindex="-1" role="dialog" aria-labelledby="copyFileLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copyFileModal">Copy File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form -->
+                    <form method="POST" action="/copy/" enctype="multipart/form-data" id="upload">
+                        <div class="form-group">
+                            <label for="source" class="col-form-label">File's name:</label>
+                            <input type="text" id="source" name="source" class="form-control" disabled/>
+                        </div>
+                        <div class="form-group">
+                            <label for="target" class="col-form-label">Target path:</label>
+                            <input type="text" id="target" name="target" class="form-control" />
+                        </div>
+                        <input type="hidden" name="path" id="send_to" value="{{path}}" />
+                    </form>
+                    <!-- End -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" value="save" id="sent-button">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+
+    <!-- get file -->
     <script type="application/javascript">
     $('input[type="file"]').change(function(e){
         var fileName = e.target.files[0].name;
         $('.custom-file-label').html(fileName);
     });
-</script>
+    </script>
+    <script>
+    //triggered when modal is about to be shown
+    $('#moveFileModal').on('show.bs.modal', function(e) {
+
+        //get data-id attribute of the clicked element
+        var source = $(e.relatedTarget).data('source');
+
+        //populate the textbox
+        $(e.currentTarget).find('input[name="source"]').val(source);
+    });
+
+     //triggered when modal is about to be shown
+    $('#copyFileModal').on('show.bs.modal', function(e) {
+
+        //get data-id attribute of the clicked element
+        var source = $(e.relatedTarget).data('source');
+
+        //populate the textbox
+        $(e.currentTarget).find('input[name="source"]').val(source);
+    });
+
+
+    </script>
 </body>
