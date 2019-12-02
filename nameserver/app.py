@@ -77,7 +77,7 @@ def file(path):
     '''
 
     if request.method == 'GET':
-        return node_man.get_storages()
+        return ','.join(node_man.get_storages())
     elif request.method == 'POST':
         location = request.form['path']
         f_name = request.form['file_name']
@@ -148,7 +148,7 @@ def init():
 def storages():
     storages = node_man.get_storages()
     node_man.add_node(request.remote_addr)
-    return storages
+    return ','.join(storages)
 
 
 app.run(host='0.0.0.0', debug=True)

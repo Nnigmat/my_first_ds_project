@@ -10,8 +10,8 @@ from multiprocessing import Pool
 
 app = Flask(__name__)
 # NAMESERVER = 'http://3.134.97.176:5000'
-NAMESERVER = 'http://0.0.0.0'
-PORT = 5000
+NAMESERVER = 'http://127.0.0.1:5000'
+PORT = '8080'
 ROOTDIR = 'file/'
 NODES = []
 FAILED_NODES = []
@@ -186,6 +186,7 @@ def sync_action(addr, action, params={}):
         requests.get(url, params=params)
     except requests.exceptions.ConnectionError:
         print(addr, "is failed")
+    return True
 
 
 def heartbeat_ask(repeatTime=15.0):

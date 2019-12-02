@@ -76,6 +76,10 @@ class NodeManager():
         url = self.createURL(storages[0], self.storage_port, 'delete' +dir)
         print(url)
         requests.get(url)
+        # try:
+        #     requests.get(url, timeout=0.8)
+        # except requests.exceptions.ReadTimeout:
+        #     print("Bug, again. UwU")
 
     def move_dir(self, dir, to_dir):
         storages = self.get_storages()
