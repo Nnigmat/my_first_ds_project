@@ -12,6 +12,7 @@ class Files():
         self.name = name
         self.is_exist = os.path.isfile("./"+name)
         self._init_db(self.name)
+        self.add('/')
         
     def _init_db(self, name):
         self.db = pickledb.load(name, self.is_exist, False)
@@ -128,16 +129,19 @@ class Files():
         '''
         return self.db.lgetall(self.db_name)
 
+    def copy_file(self, source, target, path):
+        if not (self.exists(target) and self.exists(path + source)):
+            return
+
+        self.add(target + source)
+
     
-    def move_file(self, source, target):
-        if not (self.exists(target) and self.exists(source)):
-            pass
+    def move_file(self, source, target, path):
+        if not (self.exists(target) and self.exists(path + source)):
+            return
 
-
-
-    def copy_file(self, source, target):
-        if not (self.exists(target) and self.exists(source)):
-            pass
+        self.add(target + source)
+        self.del_file(path + source)
 
 
 if __name__ == '__main__':

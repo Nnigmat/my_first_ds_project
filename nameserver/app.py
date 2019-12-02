@@ -49,14 +49,12 @@ def dirs(path):
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
                 files.add(d_path)
-                # send created folder to server
                 node_man.add_dir(d_path)
             else:
                 flash('Directory already exists')
         elif request.form['method'] == 'DELETE':
             if files.exists(d_path):
                 files.del_file(d_path)
-                # send deleted folder to server
                 node_man.del_dir(d_path)
             else:
                 flash("Directory doesn't exists")
@@ -76,7 +74,7 @@ def file(path):
     '''
 
     if request.method == 'GET':
-        return ','.join(node_man.get_storages())
+        return node_man.get_storages()
     elif request.method == 'POST':
         print(request.form['path'])
         location = request.form['path']
@@ -93,6 +91,10 @@ def file(path):
         elif request.form['method'] == 'DELETE':
             if files.exists(f_path):
                 files.del_file(f_path)
+            else:
+                flash('File does not exist')
+        else:
+            flash('Something went wrong')
     return redirect(url_for('dirs'))
 
 
@@ -102,17 +104,23 @@ def copy():
     Copy source file to the target directory
     '''
     if request.method == 'POST':
-        source = request.form['path'] + request.form['source']
+        path = request.form['path'].strip().lstrip()
+        source = request.form['source'].strip().lstrip()
         target = request.form['target'].strip().lstrip()
 
         if not target.endswith('/'):
             target = target + '/'
-        print(source, target)
 
-        files.copy_file(source, target)
+        files.copy_file(source, target, path)
+        if path == '/':
+            return redirect('/dirs/')
+        else:
+            return redirect('/dirs' + path)
 
         node_man.copy_dir(source, target)
 
+
+    return redirect(url_for('dirs'))
 
 @app.route('/move', methods=['POST'])
 def move():
@@ -120,16 +128,24 @@ def move():
     Move source file to the target directory
     '''
     if request.method == 'POST':
-        source = request.form['path'].strip().lstrip() + request.form['source'].strip().lstrip()
+        path = request.form['path'].strip().lstrip()
+        source = request.form['source'].strip().lstrip()
         target = request.form['target'].strip().lstrip()
 
         if not target.endswith('/'):
             target = target + '/'
-        print(source, target)
 
-        files.move_file(source, target)
-
+        # Move file in both nameserver and nodes
+        files.move_file(source, target, path)
         node_man.move_dir(source, target)
+
+        # Redirect
+        if path == '/':
+            return redirect('/dirs/')
+        else:
+            return redirect('/dirs' + path)
+
+    return redirect(url_for('dirs'))
 
 @app.route('/init', methods=['GET'])
 def init():
