@@ -9,8 +9,8 @@ from flask import Flask, request, send_file, abort
 from multiprocessing import Pool
 
 app = Flask(__name__)
-# NAMESERVER = 'http://3.134.97.176:5000'
-NAMESERVER = 'http://127.0.0.1:5000'
+NAMESERVER = 'http://3.134.97.176:5000'
+# NAMESERVER = 'http://127.0.0.1:5000'
 PORT = '8080'
 ROOTDIR = 'file/'
 NODES = []
@@ -93,6 +93,12 @@ def get_storage_file(path):
 def empty_file(path):
     filepath = os.path.join(ROOTDIR, path)
     open(filepath, 'a').close()
+    if request.args.get('sync'):
+        return filepath, 201
+
+    for node in NODES.copy():
+        sync_action(node, 'create_file/' + path)
+
     return filepath, 201
 
 
@@ -105,6 +111,12 @@ def create_folder(path):
     filepath = os.path.join(ROOTDIR, path)
     if not os.path.exists(filepath):
         os.makedirs(filepath)
+    if request.args.get('sync'):
+        return filepath, 201
+
+    for node in NODES.copy():
+        sync_action(node, 'dir/' + path)
+
     return filepath, 201
 
 
