@@ -74,7 +74,8 @@ def file(path):
     '''
 
     if request.method == 'GET':
-        return node_man.get_storages()
+        send_node = node_man.get_storages()[0]
+        return redirect("http://"+send_node+"/files/"+path)
     elif request.method == 'POST':
         print(request.form['path'])
         location = request.form['path']

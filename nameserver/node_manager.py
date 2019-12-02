@@ -103,4 +103,3 @@ class NodeManager():
         url = self.createURL(storages[0], self.storage_port, 'create_file' + dir)
         print(url)
         requests.get(url)
-
