@@ -82,6 +82,9 @@ def upload_file(path):
 @app.route('/sync/<path:path>', methods=['POST'])
 def get_storage_file(path):
     filepath = path
+    if os.path.isdir(filepath):
+        os.makedirs(filepath)
+        return filepath, 201
     if 'file' not in request.files:
         abort(400)
     file = request.files['file']
@@ -206,7 +209,7 @@ def sync_files():
     """
     storageAddr = request.remote_addr
     files = getAllFilePaths()
-    time.sleep(1)
+    time.sleep(0.5)
     for file in files:
         sync_file(file, storageAddr)
     # with Pool(processes=8) as pool:
@@ -220,7 +223,10 @@ def sync_file(filepath, addr):
     """
     print("sync with", addr)
     url = createURL(addr, PORT, 'sync/' + filepath)
-    file = {'file': open(filepath, 'rb')}
+    if os.path.isfile(filepath):
+        file = {'file': open(filepath, 'rb')}
+    else:
+        file = {'file': b''}
     try:
         requests.post(url, files=file, timeout=0.5)
     except requests.exceptions.RequestException:
@@ -273,6 +279,8 @@ def createURL(addr='', port='', path=''):
 def getAllFilePaths():
     filePaths = []
     for root, dirs, files in os.walk(ROOTDIR):
+        for folder in dirs:
+            filePaths.append(os.path.join(root, folder))
         for file in files:
             filePaths.append(os.path.join(root, file))
     return filePaths
