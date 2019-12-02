@@ -25,8 +25,8 @@ def init():
     global NODES
     url = NAMESERVER + "/get/storages"
     try:
-        r = requests.get(url=url)
-    except requests.exceptions.ConnectionError:
+        r = requests.get(url=url, timeout=0.1)
+    except requests.exceptions.RequestException:
         print("NAMESERVER NOT ANSWER")
         time.sleep(10)
         return init()
@@ -206,7 +206,7 @@ def sync_files():
     """
     storageAddr = request.remote_addr
     files = getAllFilePaths()
-    time.sleep(0.5)
+    time.sleep(1)
     for file in files:
         sync_file(file, storageAddr)
     # with Pool(processes=8) as pool:
@@ -222,8 +222,8 @@ def sync_file(filepath, addr):
     url = createURL(addr, PORT, 'sync/' + filepath)
     file = {'file': open(filepath, 'rb')}
     try:
-        requests.post(url, files=file)
-    except requests.exceptions.ConnectionError:
+        requests.post(url, files=file, timeout='0.5')
+    except requests.exceptions.RequestException:
         print(addr, "is failed")
 
 
@@ -235,8 +235,8 @@ def sync_action(addr, action, params={}):
     url = createURL(addr, PORT, action)
     params['sync'] = True
     try:
-        requests.get(url, params=params)
-    except requests.exceptions.ConnectionError:
+        requests.get(url, params=params, timeout='0.5')
+    except requests.exceptions.RequestException:
         print(addr, "is failed")
     return True
 
@@ -250,8 +250,8 @@ def heartbeat_ask(repeatTime=15.0):
     for node in NODES + FAILED_NODES:
         url = createURL(node, PORT)
         try:
-            requests.get(url=url)
-        except requests.exceptions.ConnectionError:
+            requests.get(url=url, timeout='0.1')
+        except requests.exceptions.RequestException:
             if node in FAILED_NODES:
                 FAILED_NODES.remove(node)
                 print(node, "removed")
