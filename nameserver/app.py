@@ -108,9 +108,10 @@ def copy():
             target = target + '/'
 
         files.copy_file(source, target, path)
-
         node_man.copy_dir(source, target)
+        return redirect(path)
 
+    return redirect(url_for('dirs'))
 
 @app.route('/move', methods=['POST'])
 def move():
@@ -126,8 +127,10 @@ def move():
             target = target + '/'
 
         files.move_file(source, target, path)
-
         node_man.move_dir(source, target)
+        return redirect(path)
+
+    return redirect(url_for('dirs'))
 
 @app.route('/init', methods=['GET'])
 def init():
@@ -137,8 +140,6 @@ def init():
     '''
     files.drop_table()
     flash('Initialized correctly')
-
-    # send init command to storage servers
 
     return redirect(url_for('dirs'))
 
