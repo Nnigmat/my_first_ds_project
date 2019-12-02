@@ -82,7 +82,7 @@ def upload_file(path):
 @app.route('/sync/<path:path>', methods=['POST'])
 def get_storage_file(path):
     filepath = path
-    if os.path.isdir(filepath):
+    if 'folder' in request.files:
         os.makedirs(filepath)
         return filepath, 201
     if 'file' not in request.files:
@@ -226,7 +226,7 @@ def sync_file(filepath, addr):
     if os.path.isfile(filepath):
         file = {'file': open(filepath, 'rb')}
     else:
-        file = {'file': b''}
+        file = {'folder': b''}
     try:
         requests.post(url, files=file, timeout=0.5)
     except requests.exceptions.RequestException:
