@@ -36,10 +36,11 @@ def dirs(path):
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
+        if '' in f:
+            f.remove('')
+
         paths = [f'{path}/{el}' for el in f] if path != '/' else [f'/{el}' for el in f]
         infos = files.get_infos(paths)
-        print(paths, infos)
-        
         return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev, infos=infos)
     else:
         location = request.form['path']
@@ -50,12 +51,14 @@ def dirs(path):
             if not files.exists(d_path):
                 files.add(d_path)
                 # send created folder to server
+                node_man.add_dir(d_path)
             else:
                 flash('Directory already exists')
         elif request.form['method'] == 'DELETE':
             if files.exists(d_path):
                 files.del_file(d_path)
                 # send deleted folder to server
+                node_man.del_dir(d_path)
             else:
                 flash("Directory doesn't exists")
         return redirect(f'/dirs{location}')
@@ -93,7 +96,7 @@ def file(path):
             # Need to implement sending to cluster
             r.post('url' ,f.read())
             '''
-            return node_man.get_storages()
+            return ','.join(node_man.get_storages())
         elif request.form['method'] == 'CREATE':
             if not files.exists(f_path):
                 files.add(f_path)
@@ -110,6 +113,8 @@ def copy(path):
     '''
     if request.method == 'POST':
         source, target = request.form['source'], request.form['target']
+        node_man.copy_dir(source, target)
+
 
 
 @app.route('/move', methods=['POST'])
@@ -119,6 +124,7 @@ def move():
     '''
     if request.method == 'POST':
         source, target = request.form['source'], request.form['target']
+        node_man.move_dir(source, target)
 
 
 @app.route('/init', methods=['GET'])

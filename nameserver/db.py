@@ -108,7 +108,7 @@ class Files():
                 if not tmp in folders:
                     folders.add(tmp)
             else:
-                if not tmp in files:
+                if not tmp in files and len(path['name'][len(name):].split('/'))==1:
                     files.add(tmp)
 
         return (sorted(folders), sorted(files))
