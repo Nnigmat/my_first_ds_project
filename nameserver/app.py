@@ -84,18 +84,6 @@ def file(path):
         f_path = f'{location}{f_name}'
 
         if request.form['method'] == 'UPLOAD':
-            '''
-            if 'file' not in request.files:
-                flash('No file part')
-                return redirect(request.url)
-            f = request.files['file']
-            if f.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
-
-            # Need to implement sending to cluster
-            r.post('url' ,f.read())
-            '''
             return ','.join(node_man.get_storages())
         elif request.form['method'] == 'CREATE':
             if not files.exists(f_path):
@@ -112,11 +100,16 @@ def copy():
     Copy source file to the target directory
     '''
     if request.method == 'POST':
-        source, target = request.form['source'], request.form['target']
+        source = request.form['path'] + request.form['source']
+        target = request.form['target'].strip().lstrip()
+
+        if not target.endswith('/'):
+            target = target + '/'
         print(source, target)
+
+        files.copy_file(source, target)
+
         node_man.copy_dir(source, target)
-
-
 
 
 @app.route('/move', methods=['POST'])
@@ -125,8 +118,14 @@ def move():
     Move source file to the target directory
     '''
     if request.method == 'POST':
-        source, target = request.form['source'], request.form['target']
+        source = request.form['path'].strip().lstrip() + request.form['source'].strip().lstrip()
+        target = request.form['target'].strip().lstrip()
+
+        if not target.endswith('/'):
+            target = target + '/'
         print(source, target)
+
+        files.move_file(source, target)
 
         node_man.move_dir(source, target)
 

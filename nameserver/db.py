@@ -128,6 +128,17 @@ class Files():
         '''
         return self.db.lgetall(self.db_name)
 
+    
+    def move_file(self, source, target):
+        if not (self.exists(target) and self.exists(source)):
+            pass
+
+
+
+    def copy_file(self, source, target):
+        if not (self.exists(target) and self.exists(source)):
+            pass
+
 
 if __name__ == '__main__':
     f = Files('f')
