@@ -287,6 +287,9 @@ if __name__ == '__main__':
 
     if not os.path.exists(ROOTDIR):
         os.makedirs(ROOTDIR)
+    else:
+        shutil.rmtree(ROOTDIR)
+        os.makedirs(ROOTDIR)
 
     init()
     heartbeat = heartbeat_ask()
