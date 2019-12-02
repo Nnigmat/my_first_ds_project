@@ -45,7 +45,7 @@ def init():
             break
 
     for node in nodes:
-        url = createURL(node, PORT, "/ask/new")
+        url = createURL(node, PORT, "ask/new")
         try:
             r = requests.get(url=url)
         except requests.exceptions.ConnectionError:
@@ -102,7 +102,7 @@ def delete(path):
             shutil.rmtree(filepath)
 
     for node in NODES.copy():
-        sync_action(node, '/delete/' + path)
+        sync_action(node, 'delete/' + path)
     return "Done", 201
 
 
@@ -115,7 +115,7 @@ def move(path):
     shutil.move(moveFrom, moveTo)
 
     for node in NODES.copy():
-        sync_action(node, '/move/' + path, {'to': request.values["to"]})
+        sync_action(node, 'move/' + path, {'to': request.values["to"]})
     return "Done", 201
 
 
@@ -130,7 +130,7 @@ def copy(path):
     else:
         dir_util.copy_tree(copyFrom, copyTo)
     for node in NODES.copy():
-        sync_action(node, '/copy/' + path, {'to': request.values["to"]})
+        sync_action(node, 'copy/' + path, {'to': request.values["to"]})
     return "Done", 201
 
 
