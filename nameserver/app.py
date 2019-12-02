@@ -108,8 +108,13 @@ def copy():
             target = target + '/'
 
         files.copy_file(source, target, path)
+        if path == '/':
+            return redirect('/dirs/')
+        else:
+            return redirect('/dirs' + path)
+
         node_man.copy_dir(source, target)
-        return redirect(path)
+
 
     return redirect(url_for('dirs'))
 
@@ -127,8 +132,12 @@ def move():
             target = target + '/'
 
         files.move_file(source, target, path)
+
         node_man.move_dir(source, target)
-        return redirect(path)
+        if path == '/':
+            return redirect('/dirs/')
+        else:
+            return redirect('/dirs' + path)
 
     return redirect(url_for('dirs'))
 
@@ -148,7 +157,7 @@ def init():
 def storages():
     storages = node_man.get_storages()
     node_man.add_node(request.remote_addr)
-    return storages
+    return ','.join(storages)
 
 
 app.run(host='0.0.0.0', debug=True)
