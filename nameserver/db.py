@@ -1,5 +1,6 @@
 import pickledb
 import os
+from datetime import datetime
 
 class Files():
     def __init__(self, name):
@@ -34,7 +35,7 @@ class Files():
         Name - full path
         '''
         if type(name) == str:
-            self.db.ladd(self.db_name, {'name':name, 'size':-1, 'cr_date':-1})
+            self.db.ladd(self.db_name, {'name': name, 'size': -1, 'cr_date': datetime.now().strftime('%d/%m/%Y, %H:%M')})
         else:
             self.db.ladd(self.db_name, name)
         self.db.dump()

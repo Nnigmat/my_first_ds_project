@@ -78,15 +78,19 @@
                     </button>
                     
                     <!-- Delete file -->
-                    <form method="POST" action="/file/">
+                    <form method="POST" action="/file/" class="float-left">
                         <input type="hidden" name="file_name" value="{{file}}" />
                         <input type="hidden" name="path" value="{{path}}" />
                         <input type="hidden" name="method" value="DELETE" />
-                        <button class="btn mr-1 float-left"><i class="fa fa-trash-alt"></i></button>
+                        <button class="btn mr-1"><i class="fa fa-trash-alt"></i></button>
                     </form>
 
                     <!-- Info file -->
-                    <button type="button" class="btn mr-1 float-left" data-toggle="modal" data-target="#infoFileModal" data-creation_date="">
+                    <button type="button" class="btn mr-1 float-left" data-toggle="modal" data-target="#infoFileModal" 
+                        {% for key in info %}
+                            data-{{key}}="{{info[key]}}"
+                        {% endfor %}
+                    >
                         <i class="fa fa-info"></i>
                     </button>
                 </div>
@@ -178,7 +182,7 @@
                     <form method="POST" action="/file/" enctype="multipart/form-data" id="upload">
                         <div class="input-group mb-3">
                             <div class="custom-file">
-                                <input name="file" type="file" class="custom-file-input" id="inputGroupFile01">
+                                <input type="file" class="custom-file-input" id="inputGroupFile01">
                                 <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
                             </div>
                             <input type="hidden" name="path" id="send_to" value="{{path}}" />
@@ -263,6 +267,50 @@
         </div>
     </div>
 
+    <!-- File info modal -->
+    <div class="modal fade" id="infoFileModal" tabindex="-1" role="dialog" aria-labelledby="infoFileLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoFileModal">File properties</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Path -->
+                    <div class="form-group row">
+                        <label for="path" class="col-sm-4 col-form-label">File's path:</label>
+                        <div class="col-sm-8">
+                            <input type="text" readonly class="form-control-plaintext font-italic" id="path">
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- Date -->
+                    <div class="form-group row">
+                        <label for="date" class="col-sm-4 col-form-label">Creation date:</label>
+                        <div class="col-sm-8">
+                            <input type="text" readonly class="form-control-plaintext font-italic" id="date">
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- Size -->
+                    <div class="form-group row">
+                        <label for="size" class="col-sm-4 col-form-label">File's size:</label>
+                        <div class="col-sm-8">
+                            <input type="text" readonly class="form-control-plaintext font-italic" id="size">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
     <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
@@ -299,6 +347,19 @@
         $(e.currentTarget).find('input[name="source"]').val(source);
     });
 
+     //triggered when modal is about to be shown
+    $('#infoFileModal').on('show.bs.modal', function(e) {
 
+        console.log('hi');
+        //get data-id attribute of the clicked element
+        var cr_date = $(e.relatedTarget).data('cr_date');
+        var path = $(e.relatedTarget).data('name');
+        var size = $(e.relatedTarget).data('size');
+
+        //populate the textbox
+        $(e.currentTarget).find('#path').val(path);
+        $(e.currentTarget).find('#date').val(cr_date);
+        $(e.currentTarget).find('#size').val(size);
+    });
     </script>
 </body>

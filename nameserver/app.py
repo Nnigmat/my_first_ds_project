@@ -36,7 +36,10 @@ def dirs(path):
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
-        infos = files.get_infos([f'{path}/el' for el in f])
+        paths = [f'{path}/{el}' for el in f] if path != '/' else [f'/{el}' for el in f]
+        infos = files.get_infos(paths)
+        print(paths, infos)
+        
         return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev, infos=infos)
     else:
         location = request.form['path']
