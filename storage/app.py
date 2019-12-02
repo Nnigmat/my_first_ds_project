@@ -61,7 +61,8 @@ def upload_file(path):
     POST:
         Return 201 if file successful saved  else 400
     """
-    filepath = os.path.join(ROOTDIR, path[len('dirs/'):])
+    path = path[len('dirs/'):] if path.startswith('dirs/') else path
+    filepath = os.path.join(ROOTDIR, path)
     if request.method == 'GET':
         if os.path.exists(filepath) and os.path.isfile(filepath):
             return send_file(filepath)
@@ -75,6 +76,16 @@ def upload_file(path):
         for node in NODES.copy():
             sync_file(filepath, node)
         return filepath, 201
+
+
+@app.route('/sync/<path:path>', methods=['POST'])
+def get_storage_file(path):
+    filepath = path
+    if 'file' not in request.files:
+        abort(400)
+    file = request.files['file']
+    file.save(filepath)
+    return filepath, 201
 
 
 @app.route('/create_file/<path:path>', methods=['GET'])
@@ -161,9 +172,6 @@ def sync_files():
     """
     storageAddr = request.remote_addr
     files = getAllFilePaths()
-    # for file in files:
-    #     sync_file(file, storageAddr)
-    # print(files)
     with Pool(processes=8) as pool:
         pool.starmap(sync_file, map(lambda x: (x, storageAddr), files))
     return 'Done', 200
@@ -173,7 +181,7 @@ def sync_file(filepath, addr):
     """
     Send file to addr
     """
-    url = createURL(addr, PORT, filepath)
+    url = createURL(addr, PORT, '/sync' + filepath)
     file = {'file': open(filepath, 'rb')}
     try:
         requests.post(url, files=file)
