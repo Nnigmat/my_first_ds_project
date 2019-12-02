@@ -75,7 +75,7 @@ def file(path):
 
     if request.method == 'GET':
         send_node = node_man.get_storages()[0]
-        return redirect("http://"+send_node+":8080/file/"+path[:-1])
+        return redirect("http://" + send_node + ":8080/file/" + path[:-1])
     elif request.method == 'POST':
         print(request.form['path'])
         location = request.form['path']
@@ -121,10 +121,8 @@ def copy():
         else:
             return redirect('/dirs' + path)
 
-
-
-
     return redirect(url_for('dirs'))
+
 
 @app.route('/move', methods=['POST'])
 def move():
@@ -150,6 +148,7 @@ def move():
             return redirect('/dirs' + path)
 
     return redirect(url_for('dirs'))
+
 
 @app.route('/init', methods=['GET'])
 def init():

@@ -241,7 +241,7 @@ def sync_action(addr, action, params={}):
     return True
 
 
-def heartbeat_ask(repeatTime=15.0):
+def heartbeat_ask(repeatTime=5.0):
     """
     Every repeatTime seconds check that node is reachable
     """
