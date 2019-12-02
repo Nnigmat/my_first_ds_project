@@ -85,6 +85,8 @@ def get_storage_file(path):
     if 'file' not in request.files:
         abort(400)
     file = request.files['file']
+    if not os.path.exists(os.path.dirname(filepath)):
+        os.makedirs(os.path.dirname(filepath))
     file.save(filepath)
     return filepath, 201
 
@@ -208,8 +210,10 @@ def sync_files():
     """
     storageAddr = request.remote_addr
     files = getAllFilePaths()
+    # for file in files:
+    #     sync_file(file, storageAddr)
     with Pool(processes=8) as pool:
-        pool.starmap(sync_file, map(lambda x: (x, storageAddr), files))
+         pool.starmap(sync_file, map(lambda x: (x, storageAddr), files))
     return 'Done', 200
 
 
@@ -218,7 +222,7 @@ def sync_file(filepath, addr):
     Send file to addr
     """
     print("sync with", addr)
-    url = createURL(addr, PORT, '/sync/' + filepath)
+    url = createURL(addr, PORT, 'sync/' + filepath)
     file = {'file': open(filepath, 'rb')}
     try:
         requests.post(url, files=file)
