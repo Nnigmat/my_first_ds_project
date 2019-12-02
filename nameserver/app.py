@@ -77,7 +77,7 @@ def file(path):
     '''
 
     if request.method == 'GET':
-        return ','.join(node_man.get_storages())
+        return node_man.get_storages()
     elif request.method == 'POST':
         location = request.form['path']
         f_name = request.form['file_name']
@@ -100,14 +100,14 @@ def copy():
     Copy source file to the target directory
     '''
     if request.method == 'POST':
-        source = request.form['path'] + request.form['source']
+        path = request.form['path'].strip().lstrip()
+        source = request.form['source'].strip().lstrip()
         target = request.form['target'].strip().lstrip()
 
         if not target.endswith('/'):
             target = target + '/'
-        print(source, target)
 
-        files.copy_file(source, target)
+        files.copy_file(source, target, path)
 
         node_man.copy_dir(source, target)
 
@@ -118,14 +118,14 @@ def move():
     Move source file to the target directory
     '''
     if request.method == 'POST':
-        source = request.form['path'].strip().lstrip() + request.form['source'].strip().lstrip()
+        path = request.form['path'].strip().lstrip()
+        source = request.form['source'].strip().lstrip()
         target = request.form['target'].strip().lstrip()
 
         if not target.endswith('/'):
             target = target + '/'
-        print(source, target)
 
-        files.move_file(source, target)
+        files.move_file(source, target, path)
 
         node_man.move_dir(source, target)
 
@@ -147,7 +147,7 @@ def init():
 def storages():
     storages = node_man.get_storages()
     node_man.add_node(request.remote_addr)
-    return ','.join(storages)
+    return storages
 
 
 app.run(host='0.0.0.0', debug=True)
