@@ -107,13 +107,15 @@ def file(path):
 
 
 @app.route('/copy', methods=['POST'])
-def copy(path):
+def copy():
     '''
     Copy source file to the target directory
     '''
     if request.method == 'POST':
         source, target = request.form['source'], request.form['target']
+        print(source, target)
         node_man.copy_dir(source, target)
+
 
 
 
@@ -124,8 +126,9 @@ def move():
     '''
     if request.method == 'POST':
         source, target = request.form['source'], request.form['target']
-        node_man.move_dir(source, target)
+        print(source, target)
 
+        node_man.move_dir(source, target)
 
 @app.route('/init', methods=['GET'])
 def init():
@@ -135,6 +138,8 @@ def init():
     '''
     files.drop_table()
     flash('Initialized correctly')
+
+    # send init command to storage servers
 
     return redirect(url_for('dirs'))
 
