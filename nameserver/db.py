@@ -49,11 +49,26 @@ class Files():
 
 
     def get_info(self, name):
+        '''
+        Return info about one file
+        Name - path
+        '''
         files = self.db.lgetall(self.db_name)
         for f in files:
             if f['name'] == name:
                 return f
         return {}
+
+
+    def get_infos(self, fnames):
+        '''
+        Return info about multiple files
+        Fnames - array of names, paths
+        '''
+        res = []
+        for f in fnames:
+            res.append(self.get_info(f))
+        return res
 
     def del_file(self, name):
         '''

@@ -4,6 +4,7 @@ from node_manager import NodeManager
 import requests as r
 
 app = Flask(__name__)
+app.jinja_env.globals.update(zip=zip)
 db_name = 'db'
 files = Files(db_name)
 app.secret_key = 'hello'
@@ -35,13 +36,12 @@ def dirs(path):
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
-        print(d, f, path)
-        return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev)
+        infos = files.get_infos([f'{path}/el' for el in f])
+        return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev, infos=infos)
     else:
         location = request.form['path']
         d_name = request.form['dir_name']
         d_path = f'{location}{"" if location != "/" else ""}{d_name}/'
-        print(location, d_name, d_path)
 
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
@@ -98,14 +98,6 @@ def file(path):
             if files.exists(f_path):
                 files.del_file(f_path)
     return redirect(url_for('dirs'))
-
-
-@app.route('/info/<path:path>')
-def info(path):
-    '''
-    Return info about file
-    '''
-    return path
 
 
 @app.route('/copy', methods=['POST'])
