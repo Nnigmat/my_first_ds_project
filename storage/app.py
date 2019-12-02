@@ -9,7 +9,7 @@ from flask import Flask, request, send_file, abort
 from multiprocessing import Pool
 
 app = Flask(__name__)
-NAMESERVER = 'http://127.0.0.1:5000/'
+NAMESERVER = 'http://3.134.97.176:5000'
 PORT = '8080'
 ROOTDIR = 'file/'
 NODES = []
@@ -22,7 +22,7 @@ def init():
     Ask nameserver for storage nodes until it answer
     """
     global NODES
-    url = NAMESERVER + "get/storages"
+    url = NAMESERVER + "/get/storages"
     try:
         r = requests.get(url=url)
     except requests.exceptions.ConnectionError:
