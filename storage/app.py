@@ -224,6 +224,7 @@ def sync_file(filepath, addr):
     print("sync with", addr)
     url = createURL(addr, PORT, 'sync/' + filepath)
     file = {'file': open(filepath, 'rb')}
+    time.sleep(0.1)
     try:
         requests.post(url, files=file)
     except requests.exceptions.ConnectionError:

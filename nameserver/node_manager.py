@@ -1,13 +1,9 @@
 import threading
-import sys
-import os
-import threading
 import requests
-import time
-import shutil
-import distutils.dir_util as dir_util
-from flask import Flask, request, send_file, abort
-from multiprocessing import Pool
+import threading
+
+import requests
+
 
 class NodeManager():
     def __init__(self):
@@ -62,7 +58,8 @@ class NodeManager():
         return self.nodes
 
     def add_node(self, node):
-        self.nodes.append(node)
+        if node not in self.nodes:
+            self.nodes.append(node)
     
     
     def add_dir(self, dir):
