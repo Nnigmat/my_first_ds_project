@@ -36,6 +36,8 @@ def dirs(path):
 
     if request.method == 'GET':
         d, f = files.items_in_folder(path)
+        if '' in f:
+            f.pop(f.index(''))
         infos = files.get_infos([f'{path}/el' for el in f])
         return render_template('dirs.html', dirs=d, files=f, path=path, prev=prev, infos=infos)
     else:
