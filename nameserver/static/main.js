@@ -1,5 +1,8 @@
 button = document.getElementById('sent-button')
+form = document.getElementById('uploadFileModal')
+
 button.addEventListener("click", function(){
+    $('#uploadFileModal').modal('hide');
     $.ajax({
         type:'GET',
         url:"/get/storages",
@@ -26,6 +29,25 @@ function sent_to_nodes(data){
         cache: false,
         contentType: false,
         processData: false,
+        async: false,
+        success: function(response){
+        }
+    });
+    // var ndata = {method: CREATE, not_create: true, file_name: file_name, path: window.location.pathname.substring(5)};
+    // console.log(JSON.stringify(ndata));
+    var ndata = new FormData();
+    ndata.append("method", "CREATE");
+    ndata.append("not_create", "true");
+    ndata.append("file_name", file_name);
+    ndata.append("path", window.location.pathname.substring(5));
+    $.ajax({
+        url: 'http://' + window.location.hostname+ ':5000/file/',
+        type: 'POST', 
+        dataType: 'json', 
+        data: ndata,
+        cache: false, 
+        contentType: false,
+        processData: false, 
         async: false,
         success: function(response){
         }

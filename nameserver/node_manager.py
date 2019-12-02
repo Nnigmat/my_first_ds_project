@@ -83,14 +83,20 @@ class NodeManager():
 
     def move_dir(self, dir, to_dir):
         storages = self.get_storages()
-        url = self.createURL(storages[0], self.storage_port, 'move'+dir+'?to='+to_dir)
+        url = self.createURL(storages[0], self.storage_port, 'move/'+dir+'?to='+to_dir)
         print(url)
         requests.get(url)
 
 
     def copy_dir(self, dir, to_dir):
         storages = self.get_storages()
-        url = self.createURL(storages[0], self.storage_port, 'copy' + dir+'?to='+to_dir)
+        url = self.createURL(storages[0], self.storage_port, 'copy/' + dir+'?to='+to_dir)
+        print(url)
+        requests.get(url)
+    
+    def create_empty_file(self, dir):
+        storages = self.get_storages()
+        url = self.createURL(storages[0], self.storage_port, 'create_file/' + dir)
         print(url)
         requests.get(url)
 

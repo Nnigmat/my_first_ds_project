@@ -46,7 +46,6 @@ def dirs(path):
         location = request.form['path']
         d_name = request.form['dir_name']
         d_path = f'{location}{"" if location != "/" else ""}{d_name}/'
-
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
                 files.add(d_path)
@@ -79,6 +78,7 @@ def file(path):
     if request.method == 'GET':
         return ','.join(node_man.get_storages())
     elif request.method == 'POST':
+        print(request.form['path'])
         location = request.form['path']
         f_name = request.form['file_name']
         f_path = f'{location}{f_name}'
@@ -88,6 +88,8 @@ def file(path):
         elif request.form['method'] == 'CREATE':
             if not files.exists(f_path):
                 files.add(f_path)
+                if request.form['not_create'] == 'true':
+                    node_man.create_empty_file(f_path)
         elif request.form['method'] == 'DELETE':
             if files.exists(f_path):
                 files.del_file(f_path)
@@ -139,6 +141,7 @@ def init():
     flash('Initialized correctly')
 
     # send init command to storage servers
+    node_man.del_dir('')
 
     return redirect(url_for('dirs'))
 
