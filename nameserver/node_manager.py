@@ -39,22 +39,22 @@ class NodeManager():
         return timer
 
     def get_storages(self):
-        for node in self.nodes + self.failed_nodes:
-            url = self.createURL(node, self.storage_port)
-            try:
-                requests.get(url=url)
-            except requests.exceptions.ConnectionError:
-                if node in self.failed_nodes:
-                    self.failed_nodes.remove(node)
-                    print(node, "removed")
-                elif node in self.nodes:
-                    self.nodes.remove(node)
-                    self.failed_nodes.append(node)
-                    print(node, "failed")
-            else:
-                if node in self.failed_nodes:
-                    self.failed_nodes.remove(node)
-                    self.nodes.append(node)
+        # for node in self.nodes + self.failed_nodes:
+        #     url = self.createURL(node, self.storage_port)
+        #     try:
+        #         requests.get(url=url)
+        #     except requests.exceptions.ConnectionError:
+        #         if node in self.failed_nodes:
+        #             self.failed_nodes.remove(node)
+        #             print(node, "removed")
+        #         elif node in self.nodes:
+        #             self.nodes.remove(node)
+        #             self.failed_nodes.append(node)
+        #             print(node, "failed")
+        #     else:
+        #         if node in self.failed_nodes:
+        #             self.failed_nodes.remove(node)
+        #             self.nodes.append(node)
         return self.nodes
 
     def add_node(self, node):
