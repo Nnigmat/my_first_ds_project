@@ -41,7 +41,7 @@ def init():
         url = createURL(node, PORT, "ask/files")
         try:
             r = requests.get(url=url, timeout=0.1)
-        except requests.exceptions.ConnectionError or requests.exceptions.ConnectTimeout:
+        except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
             continue
         else:
             break
@@ -50,7 +50,7 @@ def init():
         url = createURL(node, PORT, "ask/new")
         try:
             r = requests.get(url=url, timeout=0.1)
-        except requests.exceptions.ConnectionError or requests.exceptions.ConnectTimeout:
+        except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
             continue
 
 
