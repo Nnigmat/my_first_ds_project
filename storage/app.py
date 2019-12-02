@@ -28,7 +28,7 @@ def init():
         r = requests.get(url=url, timeout=0.1)
     except requests.exceptions.RequestException:
         print("NAMESERVER NOT ANSWER")
-        time.sleep(10)
+        time.sleep(2)
         return init()
     else:
         addrsText = r.text
