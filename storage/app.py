@@ -217,6 +217,7 @@ def sync_file(filepath, addr):
     """
     Send file to addr
     """
+    print("sync with", addr)
     url = createURL(addr, PORT, '/sync/' + filepath)
     file = {'file': open(filepath, 'rb')}
     try:
