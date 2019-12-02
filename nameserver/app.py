@@ -50,14 +50,12 @@ def dirs(path):
         if request.form['method'] == 'PUT':
             if not files.exists(d_path):
                 files.add(d_path)
-                # send created folder to server
                 node_man.add_dir(d_path)
             else:
                 flash('Directory already exists')
         elif request.form['method'] == 'DELETE':
             if files.exists(d_path):
                 files.del_file(d_path)
-                # send deleted folder to server
                 node_man.del_dir(d_path)
             else:
                 flash("Directory doesn't exists")
@@ -88,9 +86,15 @@ def file(path):
         elif request.form['method'] == 'CREATE':
             if not files.exists(f_path):
                 files.add(f_path)
+            else:
+                flash('File already exists')
         elif request.form['method'] == 'DELETE':
             if files.exists(f_path):
                 files.del_file(f_path)
+            else:
+                flash('File does not exist')
+        else:
+            flash('Something went wrong')
     return redirect(url_for('dirs'))
 
 
@@ -108,8 +112,13 @@ def copy():
             target = target + '/'
 
         files.copy_file(source, target, path)
+        if path == '/':
+            return redirect('/dirs/')
+        else:
+            return redirect('/dirs' + path)
+
         node_man.copy_dir(source, target)
-        return redirect(path)
+
 
     return redirect(url_for('dirs'))
 
@@ -126,9 +135,15 @@ def move():
         if not target.endswith('/'):
             target = target + '/'
 
+        # Move file in both nameserver and nodes
         files.move_file(source, target, path)
         node_man.move_dir(source, target)
-        return redirect(path)
+
+        # Redirect
+        if path == '/':
+            return redirect('/dirs/')
+        else:
+            return redirect('/dirs' + path)
 
     return redirect(url_for('dirs'))
 
@@ -148,7 +163,7 @@ def init():
 def storages():
     storages = node_man.get_storages()
     node_man.add_node(request.remote_addr)
-    return storages
+    return ','.join(storages)
 
 
 app.run(host='0.0.0.0', debug=True)
