@@ -77,6 +77,13 @@ def upload_file(path):
         return filepath, 201
 
 
+@app.route('/create_file/<path:path>', methods=['GET'])
+def empty_file(path):
+    filepath = os.path.join(ROOTDIR, path)
+    open(filepath, 'a').close()
+    return filepath, 201
+
+
 @app.route('/dir/<path:path>', methods=['GET'])
 def create_folder(path):
     """
@@ -115,8 +122,6 @@ def move(path):
         abort(400)
     shutil.move(moveFrom, moveTo)
 
-    for node in NODES.copy():
-        sync_action(node, 'move/' + path, {'to': request.values["to"]})
     return "Done", 201
 
 
