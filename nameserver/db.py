@@ -12,13 +12,13 @@ class Files():
         self.name = name
         self.is_exist = os.path.isfile("./"+name)
         self._init_db(self.name)
-        self.add('/')
         
     def _init_db(self, name):
         self.db = pickledb.load(name, self.is_exist, False)
         if not self.is_exist:
             self.db.lcreate(self.db_name)
         self.db.dump()
+        self.add('/')
 
 
     def exists(self, name):
